@@ -2,7 +2,7 @@
 
 TravelMore is a modern, responsive travel recommendation and booking platform built with Django. It features a sleek "liquid glass" (glassmorphism) user interface, dynamic trip recommendations based on user budget and preferences, and a fully functional booking system that generates professional PDF confirmations.
 
-## ✨ Features
+##  Features
 
 * **Smart Recommendations**: Users can input their budget tier and preferred vacation types (e.g., Mountains, Beach, Cities) to get curated travel destinations.
 * **Modern UI/UX**: The application uses a custom-built, responsive "Glassmorphism" design system with fluid animations and a modern color palette.
@@ -14,19 +14,19 @@ TravelMore is a modern, responsive travel recommendation and booking platform bu
 * **User Authentication**: Secure registration, login, and session management system.
 * **Localization Ready**: Built-in UI language switcher (EN/RU) for the main navigation elements.
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 * **Backend**: Python 3, Django 6.x
 * **Database**: SQLite3 (default, configurable to PostgreSQL/MySQL)
 * **Frontend**: HTML5, Vanilla CSS3 (Custom Design System), Vanilla JavaScript
 * **PDF Generation**: `reportlab`
 
-## 📋 Prerequisites
+##  Prerequisites
 
 * Python 3.8 or higher
 * `pip` (Python package installer)
 
-## 🚀 Installation & Setup
+##  Installation & Setup
 
 1. **Clone the repository**
    ```bash
@@ -96,13 +96,7 @@ TravelMore/
     └── urls.py                   # Route definitions
 ```
 
-## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/TravelMore/issues).
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 *Crafted with ♥ for travellers everywhere.*
