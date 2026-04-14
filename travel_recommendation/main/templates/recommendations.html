@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Destinations — TravelMore{% endblock %}
+
+{% block content %}
+<script>
+    // Extend translation dicts for recommendations page
+    Object.assign(window.TRAVELMORE_DICTS['en'], {
+        'rec_sidebar_title': 'Find Your Trip',
+        'rec_budget_label': 'Your Budget Range',
+        'rec_prefs_label': 'What do you love?',
+        'rec_prefs_help': 'Select one or more preferences',
+        'rec_submit': 'Show Matches',
+        'rec_results_sub': 'Based on your selected budget and preferences.',
+        'rec_no_match_title': 'No Exact Matches Found',
+        'rec_no_match_sub': 'Try adjusting your filters or budget to find more destinations.',
+        'rec_clear': 'Clear Filters',
+        'rec_intro_title': 'Where to next?',
+        'rec_intro_sub': 'Select your budget range and travel preferences on the left to discover curated destinations tailored for your next adventure.',
+        'rec_view_details': 'View Details',
+        'rec_book': 'Book Trip',
+        'modal_agencies': 'Contact Agencies 📞',
+        'modal_hotels': 'Where to Stay 🏨',
+    });
+    Object.assign(window.TRAVELMORE_DICTS['ru'], {
+        'rec_sidebar_title': 'Найдите Поездку',
+        'rec_budget_label': 'Ваш Бюджет',
+        'rec_prefs_label': 'Что вам нравится?',
+        'rec_prefs_help': 'Выберите одно или несколько предпочтений',
+        'rec_submit': 'Показать Результаты',
+        'rec_results_sub': 'На основе выбранного бюджета и предпочтений.',
+        'rec_no_match_title': 'Точных Совпадений Не Найдено',
+        'rec_no_match_sub': 'Попробуйте изменить фильтры или бюджет.',
+        'rec_clear': 'Сбросить Фильтры',
+        'rec_intro_title': 'Куда дальше?',
+        'rec_intro_sub': 'Выберите бюджет и предпочтения слева, чтобы найти идеальные направления для вашего следующего приключения.',
+        'rec_view_details': 'Подробнее',
+        'rec_book': 'Забронировать',
+        'modal_agencies': 'Контакты Агентств 📞',
+        'modal_hotels': 'Где Остановиться 🏨',
+    });
+</script>
+
+<div class="recommendations-page">
+    <div class="rec-container">
+
+        <!-- left: filter form -->
+        <div class="rec-sidebar">
+            <div class="glass-card sticky-card">
+                <h2 class="sidebar-title" data-i18n="rec_sidebar_title">Find Your Trip</h2>
+                <form method="post" action="{% url 'recommendations' %}" class="rec-form" id="rec-form">
+                    {% csrf_token %}
+
+                    <div class="form-section">
+                        <h3 data-i18n="rec_budget_label">{{ form.budget.label }}</h3>
+                        <div class="radio-group row-choices">
+                            {% for radio in form.budget %}
+                                <label class="glass-radio-label">
+                                    {{ radio.tag }}
+                                    <span class="custom-radio"></span>
+                                    {{ radio.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.budget.errors %}
+                            <p class="error-text">{{ form.budget.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-section">
+                        <h3 data-i18n="rec_prefs_label">{{ form.preferences.label }}</h3>
+                        <p class="help-text" data-i18n="rec_prefs_help">{{ form.preferences.help_text }}</p>
+                        <div class="checkbox-group">
+                            {% for checkbox in form.preferences %}
+                                <label class="glass-checkbox-label">
+                                    {{ checkbox.tag }}
+                                    <span class="custom-checkbox"></span>
+                                    <span class="checkbox-text">{{ checkbox.choice_label }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.preferences.errors %}
+                            <p class="error-text">{{ form.preferences.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn-glass btn-full btn-accent" data-i18n="rec_submit">Show Matches</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- right: results -->
+        <div class="rec-content">
+            {% if results is not None %}
+                <div class="results-header">
+                    <h2>{% if results %}Your Matches ({{ results|length }}){% else %}Results{% endif %}</h2>
+                    <p data-i18n="rec_results_sub">Based on your selected budget and preferences.</p>
+                </div>
+
+                {% if results %}
+                    <div class="results-grid">
+                        {% for dest in results %}
+                            <div class="glass-card result-card fade-in">
+                                <div class="result-img" style="background-image: url('{{ dest.image_url }}')">
+                                    <div class="result-badge">{{ dest.get_budget_category_display }}</div>
+                                </div>
+                                <div class="result-info">
+                                    <h3>{{ dest.name }} <span class="dest-country">{{ dest.country }}</span></h3>
+                                    <p class="dest-desc">{{ dest.description }}</p>
+                                    <div class="dest-tags">
+                                        {% for tag in dest.get_tags_list %}
+                                            <span class="tag pill-glass">{{ tag|title }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="dest-actions" style="display:flex; gap:8px;">
+                                        <button type="button" class="btn-glass btn-sm btn-outline mt-auto view-details-btn" data-i18n="rec_view_details" data-name="{{ dest.name }}" data-country="{{ dest.country }}">View Details</button>
+                                        {% if user.is_authenticated %}
+                                        <button type="button" class="btn-glass btn-sm btn-accent mt-auto open-booking-btn" data-i18n="rec_book" data-id="{{ dest.id }}" data-name="{{ dest.name }}" data-baseprice="{{ dest.base_price_per_day|floatformat:2 }}">Book Trip</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="glass-card empty-state fade-in">
+                        <div class="empty-icon">🏜️</div>
+                        <h3 data-i18n="rec_no_match_title">No Exact Matches Found</h3>
+                        <p data-i18n="rec_no_match_sub">Try adjusting your filters or budget to find more destinations.</p>
+                        <button onclick="document.getElementById('rec-form').reset()" class="btn-glass btn-accent" data-i18n="rec_clear">Clear Filters</button>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="glass-card intro-state fade-in">
+                    <div class="intro-icon">🧭</div>
+                    <h2 data-i18n="rec_intro_title">Where to next?</h2>
+                    <p data-i18n="rec_intro_sub">Select your budget range and travel preferences on the left to discover curated destinations tailored for your next adventure.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<!-- ─── DETAILS MODAL (outside all containers so it is never clipped) ─── -->
+<div class="modal-overlay" id="details-modal" style="display: none;" onclick="if(event.target===this)closeDetailsModal()">
+    <div class="glass-card modal-card">
+        <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+        <div class="modal-content">
+            <h2 id="modal-dest-name">Destination</h2>
+            <p id="modal-dest-country" class="modal-subtitle">Country</p>
+
+            <div class="modal-section">
+                <h3 data-i18n="modal_agencies">Contact Agencies 📞</h3>
+                <ul class="modal-list" id="modal-agencies">
+                    <!-- Populated via JS -->
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3 data-i18n="modal_hotels">Where to Stay 🏨</h3>
+                <ul class="modal-list" id="modal-hotels">
+                    <!-- Populated via JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── BOOKING MODAL ─────────────────────────────────────── -->
+<div class="modal-overlay" id="booking-modal" style="display: none;" onclick="if(event.target===this)closeBookingModal()">
+    <div class="glass-card modal-card" style="max-width: 600px;">
+        <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+        <div class="modal-content">
+            <h2>Book <span id="booking-dest-name">Destination</span></h2>
+            <p class="modal-subtitle">Configure your trip details</p>
+
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <input type="hidden" id="booking-dest-id">
+                <input type="hidden" id="booking-base-price">
+
+                <!-- User Info -->
+                <div class="modal-section" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div>
+                        <label style="font-weight:600; font-size:0.9rem; margin-bottom:4px; display:block;">Full Name</label>
+                        <input type="text" id="booking-fullname" class="glass-input" value="{{ user.get_full_name|default:user.username }}" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:600; font-size:0.9rem; margin-bottom:4px; display:block;">Phone Number</label>
+                        <input type="tel" id="booking-phone" class="glass-input" placeholder="+1234567890" required>
+                    </div>
+                </div>
+
+                <!-- Dates & Duration -->
+                <div class="modal-section" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div>
+                        <label style="font-weight:600; font-size:0.9rem; margin-bottom:4px; display:block;">Start Date</label>
+                        <input type="date" id="booking-start" class="glass-input" required onchange="updateBookingPrice()">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; font-size:0.9rem; margin-bottom:4px; display:block;">Duration (Days)</label>
+                        <select id="booking-days" class="glass-input" required onchange="updateBookingPrice()">
+                            <option value="1">1 Day</option>
+                            <option value="3">3 Days</option>
+                            <option value="5" selected>5 Days</option>
+                            <option value="7">1 Week</option>
+                            <option value="10">10 Days</option>
+                            <option value="14">2 Weeks</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                        <input type="number" id="booking-days-custom" class="glass-input" style="display:none; margin-top:8px;" min="1" max="90" placeholder="Enter days" oninput="updateBookingPrice()">
+                    </div>
+                </div>
+
+                <!-- Hotels Selection -->
+                <div class="modal-section">
+                    <label style="font-weight:600; font-size:0.9rem; margin-bottom:4px; display:block;">Select Hotel</label>
+                    <div id="booking-hotels-loading" style="font-size:0.9rem; color:var(--text-secondary);">Loading hotels...</div>
+                    <select id="booking-hotel" class="glass-input" style="display:none;" onchange="updateBookingPrice()">
+                        <!-- options loaded via JS -->
+                    </select>
+                    <div id="booking-hotel-info" style="margin-top:8px; font-size:0.9rem; display:none; flex-direction:column; gap:4px;">
+                        <span id="booking-hotel-address"></span>
+                        <a href="#" id="booking-hotel-map" target="_blank" class="accent-link">📍 View on Map</a>
+                    </div>
+                </div>
+
+                <div class="modal-section" style="border-top:1px solid var(--border-glass-strong); padding-top:16px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:4px;">Total Price estimated</p>
+                        <h3 style="font-size:1.8rem; color:var(--accent-glow); margin:0;" id="booking-total-price">$0.00</h3>
+                    </div>
+                    <button type="submit" class="btn-glass btn-accent" id="booking-submit-btn">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TravelMore — Smart travel recommendations based on your budget and preferences. Discover your dream destination.">
+    <title>{% block title %}TravelMore — Smart Travel Recommendations{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
+    <nav class="glass-nav" id="main-nav">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-logo">
+                <span class="logo-icon">✈</span>
+                <span class="logo-text">TravelMore</span>
+            </a>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="{% url 'home' %}" data-i18n="nav_home">Home</a></li>
+                <li><a href="{% url 'recommendations' %}" data-i18n="nav_explore">Explore</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'my_bookings' %}" data-i18n="nav_my_bookings">My Bookings</a></li>
+                    <li class="nav-user">
+                        <span class="nav-avatar">{{ user.username.0|upper }}</span>
+                        <span>{{ user.username }}</span>
+                    </li>
+                    <li><a href="{% url 'logout' %}" class="btn-glass btn-sm" data-i18n="nav_logout">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="btn-glass btn-sm" data-i18n="nav_login">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="btn-glass btn-sm btn-accent" data-i18n="nav_signup">Sign Up</a></li>
+                {% endif %}
+                <!-- Language Switcher -->
+                <li class="lang-switcher">
+                    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+                    <span class="lang-divider">|</span>
+                    <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+                </li>
+            </ul>
+        </div>
+        <!-- Language dictionary for JS translation -->
+        <script>
+            window.TRAVELMORE_DICTS = {
+                'en': {
+                    'nav_home': 'Home',
+                    'nav_explore': 'Explore',
+                    'nav_login': 'Login',
+                    'nav_signup': 'Sign Up',
+                    'nav_logout': 'Logout',
+                    'nav_my_bookings': 'My Bookings',
+                    'footer_tagline': 'Discover the world, one trip at a time.',
+                },
+                'ru': {
+                    'nav_home': 'Главная',
+                    'nav_explore': 'Поиск',
+                    'nav_login': 'Войти',
+                    'nav_signup': 'Регистрация',
+                    'nav_logout': 'Выйти',
+                    'nav_my_bookings': 'Моя Бронь',
+                    'footer_tagline': 'Открывайте мир, одно путешествие за раз.',
+                }
+            };
+        </script>
+    </nav>
+
+    <!-- ─── MESSAGES (Django messages framework) ───────────────── -->
+    {% if messages %}
+    <div class="messages-container" id="messages-container">
+        {% for message in messages %}
+        <div class="glass-message {{ message.tags }}" role="alert">
+            <span>{{ message }}</span>
+            <button class="msg-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ─── MAIN CONTENT ───────────────────────────────────────── -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ─── FOOTER ─────────────────────────────────────────────── -->
+    <footer class="glass-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="logo-icon">✈</span>
+                <span class="logo-text">TravelMore</span>
+                <p class="footer-tagline" data-i18n="footer_tagline">Discover the world, one trip at a time.</p>
+            </div>
+            <div class="footer-links">
+                <a href="{% url 'home' %}" data-i18n="nav_home">Home</a>
+                <a href="{% url 'recommendations' %}" data-i18n="nav_explore">Explore</a>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2026 TravelMore. Crafted with ♥</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main script -->
+    <script src="{% static 'js/main.js' %}?v=5"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

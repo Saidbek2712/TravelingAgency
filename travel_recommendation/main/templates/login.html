@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In — TravelMore{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="glass-card auth-card">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Log in to explore personalized destinations.</p>
+
+        <form method="post" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="auth-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="field-errors">
+                            {% for error in field.errors %}
+                                <p class="error-text">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-glass btn-full btn-accent auth-btn">Log In</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'register' %}" class="accent-link">Sign Up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TravelMore — Discover Your Dream Destination{% endblock %}
+
+{% block content %}
+<!-- ─── HERO SECTION ────────────────────────────────────────── -->
+<section class="hero" id="hero">
+    <!-- Background images for carousel -->
+    <div class="hero-bg-carousel" id="hero-carousel">
+        <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600')"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600')"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1600')"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1600')"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600')"></div>
+        <script>
+            // Extending translation dict for home page
+            Object.assign(window.TRAVELMORE_DICTS['en'], {
+                'hero_title_1': 'Your Next Adventure',
+                'hero_title_2': 'Starts Here',
+                'hero_sub': 'Tell us your budget and preferences — we\'ll find the perfect destinations tailored just for you. From hidden gems to luxury escapes.',
+                'hero_cta': 'Get Recommendations',
+                'hero_more': 'Learn More',
+                'feat_title': 'How It Works',
+                'feat_sub': 'Three simple steps to your perfect trip',
+                'feat_1': 'Set Your Budget',
+                'feat_1_sub': 'From backpacker adventures to luxury getaways — choose a budget range that works for you.',
+                'feat_2': 'Pick Preferences',
+                'feat_2_sub': 'Mountains, beaches, cities, or culture? Tell us what excites your wanderlust spirit.',
+                'feat_3': 'Get Matched',
+                'feat_3_sub': 'Our smart system curates the best destinations worldwide, tailored just for you.',
+                'pop_title': 'Popular Destinations',
+                'pop_sub': 'Where travelers are heading right now',
+                'pop_cta': 'Find Your Destination →',
+            });
+            Object.assign(window.TRAVELMORE_DICTS['ru'], {
+                'hero_title_1': 'Ваше Следующее Приключение',
+                'hero_title_2': 'Начинается Здесь',
+                'hero_sub': 'Укажите свой бюджет и предпочтения — мы найдем идеальные места для вас. От скрытых жемчужин до роскошных курортов.',
+                'hero_cta': 'Найти Направления',
+                'hero_more': 'Узнать Больше',
+                'feat_title': 'Как это работает',
+                'feat_sub': 'Три простых шага к вашему идеальному путешествию',
+                'feat_1': 'Выберите Бюджет',
+                'feat_1_sub': 'От приключений с рюкзаком до роскошного отдыха — выберите бюджет, который вам подходит.',
+                'feat_2': 'Укажите Предпочтения',
+                'feat_2_sub': 'Горы, пляжи, города или культура? Расскажите, что манит вашу душу путешественника.',
+                'feat_3': 'Получите Результат',
+                'feat_3_sub': 'Наша умная система отбирает лучшие направления по всему миру, только для вас.',
+                'pop_title': 'Популярные Направления',
+                'pop_sub': 'Куда отправляются путешественники прямо сейчас',
+                'pop_cta': 'Найти Свое Направление →',
+            });
+        </script>
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span data-i18n="hero_title_1">Your Next Adventure</span><br>
+            <span class="gradient-text" data-i18n="hero_title_2">Starts Here</span>
+        </h1>
+        <p class="hero-subtitle" data-i18n="hero_sub">
+            Tell us your budget and preferences — we'll find the perfect destinations
+            tailored just for you. From hidden gems to luxury escapes.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'recommendations' %}" class="btn-glass btn-lg btn-accent" id="cta-explore">
+                <span data-i18n="hero_cta">Get Recommendations</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#features" class="btn-glass btn-lg btn-outline" data-i18n="hero_more">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Carousel indicators moved here down -->
+    <div class="hero-indicators" id="hero-indicators">
+        <button class="indicator active" data-index="0" aria-label="Slide 1"></button>
+        <button class="indicator" data-index="1" aria-label="Slide 2"></button>
+        <button class="indicator" data-index="2" aria-label="Slide 3"></button>
+        <button class="indicator" data-index="3" aria-label="Slide 4"></button>
+        <button class="indicator" data-index="4" aria-label="Slide 5"></button>
+    </div>
+</section>
+
+<!-- ─── FEATURES SECTION ────────────────────────────────────── -->
+<section class="features" id="features">
+    <div class="section-container">
+        <h2 class="section-title" data-i18n="feat_title">How It Works</h2>
+        <p class="section-subtitle" data-i18n="feat_sub">Three simple steps to your perfect trip</p>
+
+        <div class="features-grid">
+            <div class="glass-card feature-card" data-aos="fade-up">
+                <div class="feature-icon">💰</div>
+                <h3 data-i18n="feat_1">Set Your Budget</h3>
+                <p data-i18n="feat_1_sub">From backpacker adventures to luxury getaways — choose a budget range that works for you.</p>
+            </div>
+            <div class="glass-card feature-card" data-aos="fade-up" data-delay="100">
+                <div class="feature-icon">🎯</div>
+                <h3 data-i18n="feat_2">Pick Preferences</h3>
+                <p data-i18n="feat_2_sub">Mountains, beaches, cities, or culture? Tell us what excites your wanderlust spirit.</p>
+            </div>
+            <div class="glass-card feature-card" data-aos="fade-up" data-delay="200">
+                <div class="feature-icon">🌍</div>
+                <h3 data-i18n="feat_3">Get Matched</h3>
+                <p data-i18n="feat_3_sub">Our smart system curates the best destinations worldwide, tailored just for you.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── POPULAR DESTINATIONS PREVIEW ────────────────────────── -->
+<section class="popular" id="popular">
+    <div class="section-container">
+        <h2 class="section-title" data-i18n="pop_title">Popular Destinations</h2>
+        <p class="section-subtitle" data-i18n="pop_sub">Where travelers are heading right now</p>
+
+        <div class="popular-grid">
+            <div class="glass-card dest-card">
+                <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600')"></div>
+                <div class="dest-info">
+                    <h3>Maldives</h3>
+                    <p class="dest-tag">🏖️ Beach · Luxury</p>
+                </div>
+            </div>
+            <div class="glass-card dest-card">
+                <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600')"></div>
+                <div class="dest-info">
+                    <h3>Swiss Alps</h3>
+                    <p class="dest-tag">🏔️ Mountains · Scenic</p>
+                </div>
+            </div>
+            <div class="glass-card dest-card">
+                <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600')"></div>
+                <div class="dest-info">
+                    <h3>Bali</h3>
+                    <p class="dest-tag">🌴 Nature · Beach</p>
+                </div>
+            </div>
+            <div class="glass-card dest-card">
+                <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600')"></div>
+                <div class="dest-info">
+                    <h3>Dubai</h3>
+                    <p class="dest-tag">🏙️ City · Landmarks</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-cta">
+            <a href="{% url 'recommendations' %}" class="btn-glass btn-lg btn-accent" data-i18n="pop_cta">
+                Find Your Destination →
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

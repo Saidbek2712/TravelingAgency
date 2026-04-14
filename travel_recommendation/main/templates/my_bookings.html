@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings — TravelMore{% endblock %}
+
+{% block content %}
+<div class="my-bookings-page">
+    <div class="bookings-container">
+        <div class="bookings-header fade-in">
+            <h1>✈ My Bookings</h1>
+            <p>All your upcoming and past travel reservations.</p>
+        </div>
+
+        {% if bookings %}
+            <div class="bookings-grid">
+                {% for b in bookings %}
+                    <div class="glass-card booking-card fade-in" onclick="openBookingDetail({{ b.id }})">
+                        <div class="booking-img" style="background-image: url('{{ b.destination.image_url }}')">
+                            <div class="result-badge">{{ b.start_date|date:'d M Y' }}</div>
+                        </div>
+                        <div class="booking-info">
+                            <h3>{{ b.destination.name }}
+                                <span class="dest-country">{{ b.destination.country }}</span>
+                            </h3>
+                            {% if b.hotel %}
+                                <p class="booking-hotel">🏨 {{ b.hotel.name }}
+                                    <span class="hotel-stars-inline">
+                                        {% for i in '12345'|make_list %}
+                                            {% if forloop.counter <= b.hotel.rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </p>
+                            {% endif %}
+                            <p class="booking-dates">📅 {{ b.start_date|date:'d M' }} → {{ b.end_date|date:'d M Y' }} ({{ b.num_days }} day{{ b.num_days|pluralize }})</p>
+                            <p class="booking-price">💰 ${{ b.total_price|floatformat:2 }} USD</p>
+                            <div class="booking-actions">
+                                <a href="{% url 'booking_pdf' b.id %}" class="btn-glass btn-sm btn-accent" onclick="event.stopPropagation()">
+                                    ⬇ Download PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking detail modal data -->
+                    <script>
+                        window.__bookings = window.__bookings || {};
+                        window.__bookings[{{ b.id }}] = {
+                            id: {{ b.id }},
+                            name: "{{ b.destination.name|escapejs }}",
+                            country: "{{ b.destination.country|escapejs }}",
+                            image: "{{ b.destination.image_url|escapejs }}",
+                            hotel: {% if b.hotel %}"{{ b.hotel.name|escapejs }}"{% else %}null{% endif %},
+                            hotelStars: {{ b.hotel.rating|default:0 }},
+                            hotelPhone: {% if b.hotel and b.hotel.phone %}"{{ b.hotel.phone|escapejs }}"{% else %}null{% endif %},
+                            hotelAddress: {% if b.hotel and b.hotel.address %}"{{ b.hotel.address|escapejs }}"{% else %}null{% endif %},
+                            checkIn: "{{ b.start_date|date:'d M Y' }}",
+                            checkOut: "{{ b.end_date|date:'d M Y' }}",
+                            numDays: {{ b.num_days }},
+                            fullName: "{{ b.full_name|escapejs }}",
+                            phone: "{{ b.phone|escapejs }}",
+                            total: "{{ b.total_price|floatformat:2 }}",
+                            pdfUrl: "{% url 'booking_pdf' b.id %}",
+                        };
+                    </script>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="glass-card intro-state fade-in">
+                <div class="intro-icon">🧳</div>
+                <h2>No bookings yet</h2>
+                <p>Start exploring destinations and make your first reservation!</p>
+                <a href="{% url 'recommendations' %}" class="btn-glass btn-lg btn-accent" style="margin-top:16px;">Explore Destinations</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Booking Detail Modal -->
+<div class="modal-overlay" id="booking-detail-modal" style="display:none;" onclick="if(event.target===this)closeBookingDetail()">
+    <div class="glass-card modal-card">
+        <button class="modal-close" onclick="closeBookingDetail()">&times;</button>
+        <div class="modal-content" id="booking-detail-content">
+            <!-- filled by JS -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openBookingDetail(id) {
+    const b = window.__bookings && window.__bookings[id];
+    if (!b) return;
+    const stars = '★'.repeat(b.hotelStars) + '☆'.repeat(5 - b.hotelStars);
+    const mapQ = b.hotel ? encodeURIComponent(b.hotel + ', ' + b.name + ', ' + b.country) : '';
+    document.getElementById('booking-detail-content').innerHTML = `
+        <h2>${b.name} <span class="dest-country">${b.country}</span></h2>
+        <p class="modal-subtitle">Booking #${b.id}</p>
+        <div class="modal-section">
+            <h3>👤 Traveller</h3>
+            <p><strong>${b.fullName}</strong></p>
+            <p>📞 ${b.phone || 'Not provided'}</p>
+        </div>
+        <div class="modal-section">
+            <h3>📅 Trip Dates</h3>
+            <p>${b.checkIn} → ${b.checkOut}</p>
+            <p>${b.numDays} day(s)</p>
+        </div>
+        ${b.hotel ? `
+        <div class="modal-section">
+            <h3>🏨 Hotel</h3>
+            <div class="hotel-info">
+                <span class="hotel-name">${b.hotel}</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=${mapQ}" target="_blank" class="location-pin">📍</a>
+            </div>
+            <div class="hotel-stars">${stars}</div>
+            ${b.hotelPhone ? `<p>📞 ${b.hotelPhone}</p>` : ''}
+            ${b.hotelAddress ? `<p>📌 ${b.hotelAddress}</p>` : ''}
+        </div>` : ''}
+        <div class="modal-section">
+            <h3>💰 Total Price</h3>
+            <p style="font-size:1.5rem;font-weight:800;color:var(--accent-glow)">$${b.total} USD</p>
+        </div>
+        <a href="${b.pdfUrl}" class="btn-glass btn-full btn-accent" style="margin-top:8px;">⬇ Download PDF</a>
+    `;
+    document.getElementById('booking-detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeBookingDetail() {
+    document.getElementById('booking-detail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeBookingDetail(); });
+</script>
+{% endblock %}

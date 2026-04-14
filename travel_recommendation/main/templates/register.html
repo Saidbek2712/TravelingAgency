@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up — TravelMore{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="glass-card auth-card">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join us to start discovering the world.</p>
+
+        <form method="post" action="{% url 'register' %}" class="auth-form" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-help">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="field-errors">
+                            {% for error in field.errors %}
+                                <p class="error-text">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-glass btn-full btn-accent auth-btn">Sign Up</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}" class="accent-link">Log In</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
